@@ -13,6 +13,8 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var textField: UITextField!
     
+    @IBOutlet weak var userID: UITextField!
+    
     @IBOutlet weak var imgQRCode: UIImageView!
     
     @IBOutlet weak var btnAction: UIButton!
@@ -40,15 +42,20 @@ class ViewController: UIViewController {
                 return
             }
             
-            let data = textField.text!.dataUsingEncoding(NSISOLatin1StringEncoding, allowLossyConversion: false)
+            let data = textField.text
             
-            let hash = data?.sha512()
+            let uid = userID.text
+            //!.dataUsingEncoding(NSISOLatin1StringEncoding, allowLossyConversion: false)
             
-            print(hash!.toHexString())
+            //var hash = data?.sha512()
+            
+            let user = ((data?.sha512())! + "/userid:" + uid!).dataUsingEncoding(NSISOLatin1StringEncoding, allowLossyConversion: false)
+            
+            print(user?.toHexString());
             
             let filter = CIFilter(name: "CIQRCodeGenerator")
             
-            filter!.setValue(hash, forKey: "inputMessage")
+            filter!.setValue(user, forKey: "inputMessage")
             filter!.setValue("Q", forKey: "inputCorrectionLevel")
             
             qrcodeImage = filter!.outputImage
