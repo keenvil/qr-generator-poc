@@ -10,7 +10,7 @@ import UIKit
 import CryptoSwift
 
 class ViewController: UIViewController {
-
+    
     @IBOutlet weak var textField: UITextField!
     
     @IBOutlet weak var userID: UITextField!
@@ -29,12 +29,12 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
     
     @IBAction func performButtonAction(sender: AnyObject) {
         if qrcodeImage == nil {
@@ -49,13 +49,17 @@ class ViewController: UIViewController {
             
             //var hash = data?.sha512()
             
-            let user = ((data?.sha512())! + "/userid:" + uid!).dataUsingEncoding(NSISOLatin1StringEncoding, allowLossyConversion: false)
+            let encrypted = try! data!.encrypt(AES(key: "Bar12345Bar12345", iv:"0123456789012345")).toBase64()
             
-            print(user?.toHexString());
+            let user = encrypted! + "/userid:" + uid!
+            
+            print(user);
+            
+            let hashedID = user.dataUsingEncoding(NSISOLatin1StringEncoding, allowLossyConversion: false)
             
             let filter = CIFilter(name: "CIQRCodeGenerator")
             
-            filter!.setValue(user, forKey: "inputMessage")
+            filter!.setValue(hashedID, forKey: "inputMessage")
             filter!.setValue("Q", forKey: "inputCorrectionLevel")
             
             qrcodeImage = filter!.outputImage
@@ -90,7 +94,5 @@ class ViewController: UIViewController {
         
         imgQRCode.image = UIImage(CIImage: transformedImage)
     }
-    
-
 }
 
